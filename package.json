@@ -1,0 +1,15 @@
+{
+  "name": "docone",
+  "version": "1.0.0",
+  "description": "Document sharing webapp",
+  "scripts": {
+    "build:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css",
+    "watch:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css --watch"
+  },
+  "keywords": ["document-sharing", "flask", "tailwind"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

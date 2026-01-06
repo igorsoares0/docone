@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.title }} - DocOne</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="bg-gray-900 min-h-screen">
+    <!-- Viewer Header -->
+    <div class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-white font-medium">{{ document.title }}</h1>
+                    <span class="text-gray-400 text-sm" id="pageInfo">Page 1 of {{ document.page_count or '?' }}</span>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <!-- Page Navigation -->
+                    <button id="prevPage" class="px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <button id="nextPage" class="px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Download Button -->
+                    {% if link.allow_download %}
+                    <a href="{{ url_for('viewer.download_pdf', link_code=link.link_code) }}" class="px-4 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Canvas -->
+    <div class="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
+        <canvas id="pdfCanvas" class="max-w-full shadow-2xl"></canvas>
+    </div>
+
+    <!-- Hidden data for analytics -->
+    <div id="viewerData"
+         data-link-code="{{ link.link_code }}"
+         data-session-id="{{ tracking_session_id }}"
+         data-page-count="{{ document.page_count or 0 }}"
+         data-csrf-token="{{ csrf_token() }}"
+         style="display: none;"></div>
+
+    <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DocOne - Document Sharing{% endblock %}</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('documents.dashboard') }}" class="text-2xl font-bold text-primary-600">
+                        DocOne
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    {% if current_user.is_authenticated %}
+                        <span class="text-gray-600">{{ current_user.email }}</span>
+                        <a href="{{ url_for('documents.dashboard') }}" class="text-gray-700 hover:text-primary-600">Dashboard</a>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary text-sm">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-700 hover:text-primary-600">Login</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary text-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                {% for category, message in messages %}
+                    <div class="rounded-md p-4 mb-4 {% if category == 'success' %}bg-green-50 text-green-800{% elif category == 'danger' %}bg-red-50 text-red-800{% elif category == 'warning' %}bg-yellow-50 text-yellow-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                        <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="{% block main_class %}max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8{% endblock %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <p class="text-center text-gray-500 text-sm">
+                &copy; 2025 DocOne. Secure document sharing platform.
+            </p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

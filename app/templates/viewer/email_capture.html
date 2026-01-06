@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View {{ document.title }} - DocOne</title>
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full px-4">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                        <div class="rounded-md p-4 bg-red-50 text-red-800">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100">
+                    <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="mt-4 text-2xl font-bold text-gray-900">{{ document.title }}</h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Enter your email to view this document
+                </p>
+            </div>
+
+            {% if link.custom_message %}
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-900">{{ link.custom_message }}</p>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('viewer.email_capture', link_code=link.link_code) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-4">
+                    <label for="email" class="label">Email Address <span class="text-red-500">*</span></label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="input"
+                        required
+                        autofocus
+                        placeholder="you@example.com"
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label for="full_name" class="label">Full Name (optional)</label>
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        class="input"
+                        placeholder="John Doe"
+                    >
+                </div>
+
+                <div class="mb-6">
+                    <label for="company" class="label">Company (optional)</label>
+                    <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        class="input"
+                        placeholder="Acme Inc."
+                    >
+                </div>
+
+                <button type="submit" class="w-full btn btn-primary">
+                    View Document
+                </button>
+            </form>
+
+            <p class="mt-4 text-xs text-gray-500 text-center">
+                Your information is collected by the document owner for viewing analytics.
+            </p>
+        </div>
+
+        <p class="mt-4 text-center text-xs text-gray-500">
+            Powered by DocOne
+        </p>
+    </div>
+</body>
+</html>

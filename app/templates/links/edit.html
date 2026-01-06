@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Link - {{ link.name or 'Unnamed Link' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ url_for('links.manage_links', document_id=link.document_id) }}" class="text-primary-600 hover:text-primary-700 inline-flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Links
+        </a>
+    </div>
+
+    <div class="card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Edit Shareable Link</h2>
+        <p class="text-gray-600 mb-6">{{ link.name or 'Unnamed Link' }}</p>
+
+        <form method="POST" action="{{ url_for('links.edit_link', link_id=link.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Link Name -->
+            <div class="mb-4">
+                <label for="name" class="label">Link Name (optional)</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="input"
+                    value="{{ link.name or '' }}"
+                    placeholder="e.g., Client Proposal - John Doe"
+                >
+            </div>
+
+            <!-- Password Protection -->
+            <div class="mb-4">
+                <label for="password" class="label">Password Protection (optional)</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="input"
+                    placeholder="Leave blank to keep current password or remove it"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    {% if link.requires_password %}
+                    Currently password protected. Enter new password to change it, or leave blank to keep current.
+                    {% else %}
+                    Currently no password. Enter a password to add protection.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Active Status -->
+            <div class="mb-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="is_active"
+                            name="is_active"
+                            type="checkbox"
+                            {% if link.is_active %}checked{% endif %}
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                    </div>
+                    <div class="ml-3">
+                        <label for="is_active" class="font-medium text-gray-700">
+                            Link is active
+                        </label>
+                        <p class="text-sm text-gray-500">
+                            Uncheck to temporarily disable this link
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Requirement -->
+            <div class="mb-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="require_email"
+                            name="require_email"
+                            type="checkbox"
+                            {% if link.require_email %}checked{% endif %}
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                    </div>
+                    <div class="ml-3">
+                        <label for="require_email" class="font-medium text-gray-700">
+                            Require email before viewing
+                        </label>
+                        <p class="text-sm text-gray-500">
+                            Collect viewer's email address before showing the document
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Allow Download -->
+            <div class="mb-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="allow_download"
+                            name="allow_download"
+                            type="checkbox"
+                            {% if link.allow_download %}checked{% endif %}
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                    </div>
+                    <div class="ml-3">
+                        <label for="allow_download" class="font-medium text-gray-700">
+                            Allow download
+                        </label>
+                        <p class="text-sm text-gray-500">
+                            Let viewers download the document
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiration Date -->
+            <div class="mb-4">
+                <label for="expires_at" class="label">Expiration Date (optional)</label>
+                <input
+                    type="date"
+                    id="expires_at"
+                    name="expires_at"
+                    class="input"
+                    value="{{ link.expires_at.strftime('%Y-%m-%d') if link.expires_at else '' }}"
+                >
+            </div>
+
+            <!-- Max Views -->
+            <div class="mb-4">
+                <label for="max_views" class="label">Maximum Views (optional)</label>
+                <input
+                    type="number"
+                    id="max_views"
+                    name="max_views"
+                    class="input"
+                    value="{{ link.max_views or '' }}"
+                    placeholder="e.g., 100"
+                    min="1"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    Current views: {{ link.view_count }}
+                </p>
+            </div>
+
+            <!-- Custom Message -->
+            <div class="mb-6">
+                <label for="custom_message" class="label">Custom Message (optional)</label>
+                <textarea
+                    id="custom_message"
+                    name="custom_message"
+                    rows="3"
+                    class="input"
+                    placeholder="This message will be shown to viewers before they see the document"
+                >{{ link.custom_message or '' }}</textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex space-x-3">
+                <button type="submit" class="flex-1 btn btn-primary">
+                    Update Link
+                </button>
+                <a href="{{ url_for('links.manage_links', document_id=link.document_id) }}" class="flex-1 btn btn-secondary text-center">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

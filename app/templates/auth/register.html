@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Register - DocOne{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-16rem)] flex items-center justify-center">
+    <div class="max-w-md w-full">
+        <div class="card">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Create Account</h2>
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Full Name -->
+                <div class="mb-4">
+                    <label for="full_name" class="label">Full Name</label>
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        class="input"
+                        placeholder="John Doe"
+                        autofocus
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="label">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="input"
+                        required
+                        placeholder="you@example.com"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="password" class="label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="input"
+                        required
+                        placeholder="At least 8 characters"
+                    >
+                    <p class="mt-1 text-xs text-gray-500">
+                        Must be at least 8 characters with letters and numbers
+                    </p>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-6">
+                    <label for="confirm_password" class="label">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        class="input"
+                        required
+                        placeholder="Re-enter your password"
+                    >
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full btn btn-primary">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <p class="mt-4 text-center text-sm text-gray-600">
+                Already have an account?
+                <a href="{{ url_for('auth.login') }}" class="text-primary-600 hover:text-primary-700 font-medium">
+                    Login
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

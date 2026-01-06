@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.title }} - Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{{ url_for('documents.dashboard') }}" class="text-primary-600 hover:text-primary-700 inline-flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Dashboard
+    </a>
+</div>
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">{{ document.title }}</h1>
+    <p class="mt-2 text-gray-600">{{ document.original_filename }}</p>
+</div>
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-primary-100 rounded-md p-3">
+                <svg class="h-6 w-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+            </div>
+            <div class="ml-5">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Total Views</dt>
+                    <dd class="text-2xl font-semibold text-gray-900">{{ document.total_views }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-secondary-100 rounded-md p-3">
+                <svg class="h-6 w-6 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </div>
+            <div class="ml-5">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Unique Viewers</dt>
+                    <dd class="text-2xl font-semibold text-gray-900">{{ document.unique_viewers }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
+                <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                </svg>
+            </div>
+            <div class="ml-5">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Shareable Links</dt>
+                    <dd class="text-2xl font-semibold text-gray-900">{{ document.shareable_links.count() }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Links Section -->
+<div class="card mb-8">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Shareable Links</h2>
+        <a href="{{ url_for('links.create_link', document_id=document.id) }}" class="btn btn-primary text-sm inline-flex items-center">
+            Create New Link
+        </a>
+    </div>
+
+    {% if document.shareable_links.count() > 0 %}
+        <div class="space-y-4">
+            {% for link in document.shareable_links %}
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900">
+                            {{ link.name or 'Unnamed Link' }}
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            <code class="bg-gray-100 px-2 py-1 rounded text-xs">
+                                {{ request.url_root }}v/{{ link.link_code }}
+                            </code>
+                        </p>
+                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                            <span>{{ link.view_count }} views</span>
+                            {% if link.requires_password %}
+                            <span class="text-yellow-600">Password Protected</span>
+                            {% endif %}
+                            {% if link.require_email %}
+                            <span class="text-blue-600">Email Required</span>
+                            {% endif %}
+                            {% if not link.is_valid %}
+                            <span class="text-red-600">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="ml-4 flex space-x-2">
+                        <button onclick="copyLink('{{ request.url_root }}v/{{ link.link_code }}')" class="text-primary-600 hover:text-primary-700 text-sm">
+                            Copy
+                        </button>
+                        <a href="{{ url_for('links.edit_link', link_id=link.id) }}" class="text-gray-600 hover:text-gray-900 text-sm">
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center py-8">
+            No shareable links yet. Create one to start tracking views.
+        </p>
+    {% endif %}
+</div>
+
+<!-- Recent Views Section -->
+<div class="card">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Recent Views</h2>
+
+    {% if stats.views %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Viewer
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date & Time
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Duration
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Pages Viewed
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Max Page
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for view in stats.views[:20] %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">
+                                {{ view.viewer_email or 'Anonymous' }}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ view.viewer_ip }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ view.started_at.strftime('%b %d, %Y') }}<br>
+                            <span class="text-xs">{{ view.started_at.strftime('%I:%M %p') }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if view.duration_seconds %}
+                                {% if view.duration_seconds < 60 %}
+                                    {{ view.duration_seconds }}s
+                                {% else %}
+                                    {{ (view.duration_seconds // 60) }}m {{ (view.duration_seconds % 60) }}s
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ view.total_page_views or 0 }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ view.max_page_reached or 1 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if stats.views|length > 20 %}
+        <p class="mt-4 text-sm text-gray-500 text-center">
+            Showing 20 most recent views out of {{ stats.views|length }} total
+        </p>
+        {% endif %}
+    {% else %}
+        <p class="text-gray-500 text-center py-8">
+            No views yet. Share your document to start tracking analytics.
+        </p>
+    {% endif %}
+</div>
+
+<script>
+function copyLink(url) {
+    navigator.clipboard.writeText(url).then(function() {
+        alert('Link copied to clipboard!');
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+</script>
+{% endblock %}

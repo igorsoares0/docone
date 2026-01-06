@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Create Share Link - {{ document.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ url_for('links.manage_links', document_id=document.id) }}" class="text-primary-600 hover:text-primary-700 inline-flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Links
+        </a>
+    </div>
+
+    <div class="card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Create Shareable Link</h2>
+        <p class="text-gray-600 mb-6">For: {{ document.title }}</p>
+
+        <form method="POST" action="{{ url_for('links.create_link', document_id=document.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Link Name -->
+            <div class="mb-4">
+                <label for="name" class="label">Link Name (optional)</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="input"
+                    placeholder="e.g., Client Proposal - John Doe"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    Give this link a name to identify it later
+                </p>
+            </div>
+
+            <!-- Password Protection -->
+            <div class="mb-4">
+                <label for="password" class="label">Password Protection (optional)</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="input"
+                    placeholder="Leave blank for no password"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    Require a password to view this document
+                </p>
+            </div>
+
+            <!-- Email Requirement -->
+            <div class="mb-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="require_email"
+                            name="require_email"
+                            type="checkbox"
+                            checked
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                    </div>
+                    <div class="ml-3">
+                        <label for="require_email" class="font-medium text-gray-700">
+                            Require email before viewing
+                        </label>
+                        <p class="text-sm text-gray-500">
+                            Collect viewer's email address before showing the document
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Allow Download -->
+            <div class="mb-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input
+                            id="allow_download"
+                            name="allow_download"
+                            type="checkbox"
+                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        >
+                    </div>
+                    <div class="ml-3">
+                        <label for="allow_download" class="font-medium text-gray-700">
+                            Allow download
+                        </label>
+                        <p class="text-sm text-gray-500">
+                            Let viewers download the document
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiration Date -->
+            <div class="mb-4">
+                <label for="expires_at" class="label">Expiration Date (optional)</label>
+                <input
+                    type="date"
+                    id="expires_at"
+                    name="expires_at"
+                    class="input"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    Link will become inactive after this date
+                </p>
+            </div>
+
+            <!-- Max Views -->
+            <div class="mb-4">
+                <label for="max_views" class="label">Maximum Views (optional)</label>
+                <input
+                    type="number"
+                    id="max_views"
+                    name="max_views"
+                    class="input"
+                    placeholder="e.g., 100"
+                    min="1"
+                >
+                <p class="mt-1 text-sm text-gray-500">
+                    Link will become inactive after this many views
+                </p>
+            </div>
+
+            <!-- Custom Message -->
+            <div class="mb-6">
+                <label for="custom_message" class="label">Custom Message (optional)</label>
+                <textarea
+                    id="custom_message"
+                    name="custom_message"
+                    rows="3"
+                    class="input"
+                    placeholder="This message will be shown to viewers before they see the document"
+                ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex space-x-3">
+                <button type="submit" class="flex-1 btn btn-primary">
+                    Create Link
+                </button>
+                <a href="{{ url_for('links.manage_links', document_id=document.id) }}" class="flex-1 btn btn-secondary text-center">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
