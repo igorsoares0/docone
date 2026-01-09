@@ -40,6 +40,20 @@ def view(link_code):
     # Get or create session ID for analytics tracking
     tracking_session_id = session.get(f'tracking_session_{link_code}')
 
+    # If no session ID exists yet (user didn't go through email capture), create one now
+    if not tracking_session_id:
+        from app.services.analytics_tracker import AnalyticsTracker
+        tracking_session_id = AnalyticsTracker.start_viewing_session(
+            link_id=link.id,
+            viewer_email=None,  # No email if they didn't go through email capture
+            viewer_ip=request.remote_addr,
+            user_agent=request.user_agent.string
+        )
+        session[f'tracking_session_{link_code}'] = tracking_session_id
+
+        # Increment view count
+        LinkGeneratorService.increment_view_count(link.id)
+
     # Render document viewer
     return render_template('viewer/document.html',
                           link=link,

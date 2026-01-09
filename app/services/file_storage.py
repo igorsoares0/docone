@@ -28,8 +28,13 @@ class FileStorageService:
             str(now.month).zfill(2)
         )
 
-        # Full path
+        # Full path - ensure absolute path
         upload_folder = current_app.config['UPLOAD_FOLDER']
+        if not os.path.isabs(upload_folder):
+            # If upload_folder is relative, make it relative to app root
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            upload_folder = os.path.join(base_dir, upload_folder)
+
         full_dir_path = os.path.join(upload_folder, relative_path)
         os.makedirs(full_dir_path, exist_ok=True)
 
@@ -49,6 +54,11 @@ class FileStorageService:
     def get_full_path(relative_path):
         """Get full filesystem path from relative path"""
         upload_folder = current_app.config['UPLOAD_FOLDER']
+        # Ensure we use absolute path from root, not relative to current directory
+        if not os.path.isabs(upload_folder):
+            # If upload_folder is relative, make it relative to app root
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            upload_folder = os.path.join(base_dir, upload_folder)
         return os.path.join(upload_folder, relative_path)
 
     @staticmethod

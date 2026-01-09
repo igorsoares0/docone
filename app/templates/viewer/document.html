@@ -52,7 +52,7 @@
     <!-- Hidden data for analytics -->
     <div id="viewerData"
          data-link-code="{{ link.link_code }}"
-         data-session-id="{{ tracking_session_id }}"
+         data-session-id="{{ tracking_session_id or '' }}"
          data-page-count="{{ document.page_count or 0 }}"
          data-csrf-token="{{ csrf_token() }}"
          style="display: none;"></div>

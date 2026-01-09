@@ -20,7 +20,7 @@ class Config:
 
     # File upload configuration
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_UPLOAD_SIZE', 52428800))  # 50MB default
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'app/static/uploads')
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'static/uploads')
     ALLOWED_EXTENSIONS = {'pdf', 'docx', 'pptx'}
 
     # Session configuration

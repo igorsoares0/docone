@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (dataEl) {
         linkCode = dataEl.dataset.linkCode;
         sessionId = dataEl.dataset.sessionId;
+
+        // Check if sessionId is valid (not 'None' string or empty)
+        if (!sessionId || sessionId === 'None' || sessionId === 'null') {
+            sessionId = null;
+        }
+
         totalPages = parseInt(dataEl.dataset.pageCount) || 0;
         csrfToken = dataEl.dataset.csrfToken;
 
@@ -146,7 +152,11 @@ function startAnalyticsHeartbeat() {
 }
 
 function sendAnalyticsUpdate(isFinal) {
-    if (!sessionId) return;
+    // Only send analytics if we have a valid session ID
+    if (!sessionId || sessionId === 'None' || sessionId === 'null') {
+        console.warn('No valid session ID for analytics tracking');
+        return;
+    }
 
     const duration = Math.floor((Date.now() - startTime) / 1000);
 
